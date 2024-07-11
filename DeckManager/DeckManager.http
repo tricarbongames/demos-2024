@@ -1,6 +1,6 @@
 @DeckManager_HostAddress = http://localhost:5271
 
-GET {{DeckManager_HostAddress}}/weatherforecast/
+GET {{DeckManager_HostAddress}}/deckmanager/
 Accept: application/json
 
 ###
