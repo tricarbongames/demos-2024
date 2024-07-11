@@ -4,7 +4,7 @@
 This repository contains the source code for the Deck Manager Service.  I started with a .NET 8 REST API template project to allow for easy CI deployments to Azure.  I then implemented more code as needed to meet the requirements from the PDF.  
 
 ## How to Use
-I used Swagger to generate documentation.  Which can be found here:
+I used Swagger to generate documentation, which can be found here:
 ```
 https://deck-demo.azurewebsites.net/swagger/index.html
 ```
