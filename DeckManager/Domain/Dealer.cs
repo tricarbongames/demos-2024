@@ -46,8 +46,7 @@ public class Dealer : IDealer
 
     public void TryDiscard(Card card)
     {
-        // We can treat Suit + Rank as a composite key, meaning only one card could be removed at a time.  
-        // Will not work if the deck has duplicates.
+        // We can treat Suit + Rank as a composite key, meaning only one card could be removed at a time.
         var discardCount = DealtCards.RemoveAll(c => c.Suit == card.Suit && c.Rank == card.Rank);
 
         if (discardCount == 0)
