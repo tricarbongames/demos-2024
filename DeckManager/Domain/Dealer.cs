@@ -46,9 +46,11 @@ public class Dealer : IDealer
 
     public void TryDiscard(Card card)
     {
-        var wasDiscarded = DealtCards.Remove(card);
+        // We can treat Suit + Rank as a composite key, meaning only one card could be removed at a time.  
+        // Will not work if the deck has duplicates.
+        var discardCount = DealtCards.RemoveAll(c => c.Suit == card.Suit && c.Rank == card.Rank);
 
-        if (wasDiscarded == false)
+        if (discardCount == 0)
         {
             _logger.Log(LogLevel.Warning, $"Attempted to discard {card.DisplayName} that was not dealt");
             return;
