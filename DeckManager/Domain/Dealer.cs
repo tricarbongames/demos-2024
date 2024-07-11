@@ -62,7 +62,7 @@ public class Dealer : IDealer
     {
         if (splitIndex < 0 || splitIndex >= CardsInDeck.Count - 1)
         {
-            _logger.Log(LogLevel.Warning, $"Split index of {splitIndex} is invalid for deck size of {CardsInDeck.Count}");
+            _logger.Log(LogLevel.Warning, $"Split index of {splitIndex} is invalid for a deck size of {CardsInDeck.Count}");
             return;
         }
 

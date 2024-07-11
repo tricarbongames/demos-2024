@@ -7,12 +7,10 @@ namespace DeckManager.Controllers;
 [Route("[controller]")]
 public class DealerController : ControllerBase
 {
-    private readonly ILogger<DealerController> _logger;
     private readonly IDealer _dealer;
 
-    public DealerController(ILogger<DealerController> logger, IDealer dealer)
+    public DealerController(IDealer dealer)
     {
-        _logger = logger;
         _dealer = dealer;
     }
 
