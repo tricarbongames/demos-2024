@@ -7,6 +7,7 @@ namespace DeckManager.Domain.Test;
 public class DealerTest
 {
     readonly Mock<ILogger<Dealer>> mockLogger = new();
+    private const int ExpectedTotalCardCount = 52;
 
     [Fact]
     public void DealCard_NotShuffled()
@@ -41,7 +42,7 @@ public class DealerTest
         var actualCard = uut.Cheat();
 
         Assert.Equal(expectedCard, actualCard);
-        AssertCardCounts(uut, 52, 0, 0);
+        AssertCardCounts(uut, ExpectedTotalCardCount, 0, 0);
     }
 
     private static void AssertCardCounts(Dealer dealer, int inDeck, int dealt, int discarded)
@@ -49,5 +50,8 @@ public class DealerTest
         Assert.Equal(inDeck, dealer.CardsInDeck.Count);
         Assert.Equal(dealt, dealer.DealtCards.Count);
         Assert.Equal(discarded, dealer.DiscardedCards.Count);
+
+        var actualTotalCardCount = inDeck + dealt + discarded;
+        Assert.Equal(ExpectedTotalCardCount, actualTotalCardCount);
     }
 }
