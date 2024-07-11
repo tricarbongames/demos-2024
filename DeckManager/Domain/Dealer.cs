@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 namespace DeckManager.Domain;
 
 public interface IDealer
@@ -26,9 +28,18 @@ public class Dealer : IDealer
 
     public Card DealCard()
     {
-        var dealtCard = CardsInDeck.First();
-        CardsInDeck.Remove(dealtCard);
-        DealtCards.Add(dealtCard);
+        Card dealtCard;
+        // lock allows for thread safety.
+        lock (CardsInDeck)
+        {
+            dealtCard = CardsInDeck.First();
+            CardsInDeck.Remove(dealtCard);
+        }
+
+        lock (DealtCards)
+        {
+            DealtCards.Add(dealtCard);
+        }
 
         return dealtCard;
     }
@@ -36,17 +47,21 @@ public class Dealer : IDealer
     // Shuffle assigns a random guid to each card in the deck, then sorts by the guids.
     public void Shuffle()
     {
-        foreach (var card in CardsInDeck)
+        lock (CardsInDeck)
         {
-            card.ShuffleOrder = Guid.NewGuid();
-        }
+            foreach (var card in CardsInDeck)
+            {
+                card.ShuffleOrder = Guid.NewGuid();
+            }
 
-        CardsInDeck = [.. CardsInDeck.OrderBy(c => c.ShuffleOrder)];
+            CardsInDeck = [.. CardsInDeck.OrderBy(c => c.ShuffleOrder)];
+        }
     }
 
     public void TryDiscard(Card card)
     {
         // We can treat Suit + Rank as a composite key, meaning only one card could be removed at a time.
+        // Not locking because remove is idempotent.
         var discardCount = DealtCards.RemoveAll(c => c.Suit == card.Suit && c.Rank == card.Rank);
 
         if (discardCount == 0)
@@ -55,7 +70,10 @@ public class Dealer : IDealer
             return;
         }
 
-        DiscardedCards.Add(card);
+        lock (DiscardedCards)
+        {
+            DiscardedCards.Add(card);
+        }
     }
 
     public void TryCut(int splitIndex)
@@ -66,15 +84,21 @@ public class Dealer : IDealer
             return;
         }
 
-        var topStack = CardsInDeck[..splitIndex];
-        var bottomStack = CardsInDeck.Slice(splitIndex + 1, CardsInDeck.Count - 1);
-        CardsInDeck = bottomStack;
-        CardsInDeck.AddRange(topStack);
+        lock (CardsInDeck)
+        {
+            var topStack = CardsInDeck[..splitIndex];
+            var bottomStack = CardsInDeck.Slice(splitIndex + 1, CardsInDeck.Count - 1);
+            CardsInDeck = bottomStack;
+            CardsInDeck.AddRange(topStack);
+        }
     }
 
     public void Order()
     {
-        CardsInDeck = [.. CardsInDeck.OrderBy(c => c.SortOrderAfterRebuild)];
+        lock (CardsInDeck)
+        {
+            CardsInDeck = [.. CardsInDeck.OrderBy(c => c.SortOrderAfterRebuild)];
+        }
     }
 
     public void RebuildDeck()
@@ -84,12 +108,15 @@ public class Dealer : IDealer
         DiscardedCards = [];
         var sortOrder = 0;
 
-        foreach (var suit in Enum.GetValues<Suit>())
+        lock (CardsInDeck)
         {
-            foreach (var rank in Enum.GetValues<Rank>())
+            foreach (var suit in Enum.GetValues<Suit>())
             {
-                CardsInDeck.Add(new Card(suit, rank, sortOrder));
-                sortOrder++;
+                foreach (var rank in Enum.GetValues<Rank>())
+                {
+                    CardsInDeck.Add(new Card(suit, rank, sortOrder));
+                    sortOrder++;
+                }
             }
         }
     }
