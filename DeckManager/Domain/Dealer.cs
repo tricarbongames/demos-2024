@@ -32,6 +32,13 @@ public class Dealer : IDealer
         // lock allows for thread safety.
         lock (CardsInDeck)
         {
+            if (CardsInDeck.Count is 0)
+            {
+                _logger.Log(LogLevel.Warning, $"Cannot deal card, deck is empty.");
+
+                return null;
+            }
+
             dealtCard = CardsInDeck.First();
             CardsInDeck.Remove(dealtCard);
         }
@@ -123,6 +130,13 @@ public class Dealer : IDealer
 
     public Card Cheat()
     {
+        if (CardsInDeck.Count is 0)
+        {
+            _logger.Log(LogLevel.Warning, $"Cannot cheat, deck is empty.");
+
+            return null;
+        }
+
         return CardsInDeck.First();
     }
 }
