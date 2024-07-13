@@ -91,8 +91,8 @@ public class DealerTest
         var shuffleDealer = new Dealer(mockLogger.Object);
         shuffleDealer.Shuffle();
 
-        // If at least 10 cards are in a different placment after a shuffle, we can safely say a shuffle happened.
-        const int differenceThreshold = 10;
+        // If at least 25% of cards are in a different placment after a shuffle, we can safely say a shuffle happened.
+        const int differenceThreshold = ExpectedTotalCardCount / 4;
         var differenceCount = 0;
         for (var i = 0; i < ExpectedTotalCardCount; i++)
         {
