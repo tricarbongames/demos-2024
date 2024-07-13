@@ -3,22 +3,62 @@ using Moq;
 
 namespace DeckManager.Domain.Test;
 
-// Trying to give you an idea of how I would test, not going for 100% coverage here.
 public class DealerTest
 {
     readonly Mock<ILogger<Dealer>> mockLogger = new();
     private const int ExpectedTotalCardCount = 52;
 
     [Fact]
-    public void DealCard_NotShuffled()
+    public void DealCard_DefaultSortOrder()
     {
         var uut = new Dealer(mockLogger.Object);
-        var expectedCard = uut.CardsInDeck[0];
 
         var actualCard = uut.DealCard();
 
-        Assert.Equal(expectedCard, actualCard);
+        Assert.Equal(default, actualCard.Suit);
+        Assert.Equal(default, actualCard.Rank);
         AssertCardCounts(uut, 51, 1, 0);
+    }
+
+    [Fact]
+    public void DealCard_ThenRebuild()
+    {
+        var uut = new Dealer(mockLogger.Object);
+
+        uut.DealCard();
+        uut.RebuildDeck();
+        var actualTopCard = uut.Cheat();
+
+        Assert.Equal(default, actualTopCard.Suit);
+        Assert.Equal(default, actualTopCard.Rank);
+        AssertCardCounts(uut, ExpectedTotalCardCount, 0, 0);
+    }
+
+    [Fact]
+    public void DealCard_ThenSuffle_ThenOrder()
+    {
+        var uut = new Dealer(mockLogger.Object);
+
+        uut.DealCard();
+        uut.Shuffle();
+        uut.Order();
+        var actualTopCard = uut.Cheat();
+
+        Assert.Equal(Suit.Spades, actualTopCard.Suit);
+        Assert.Equal(Rank.Three, actualTopCard.Rank);
+        AssertCardCounts(uut, 51, 1, 0);
+    }
+
+    [Fact]
+    public void DealCard_ThenDiscardCard()
+    {
+        var uut = new Dealer(mockLogger.Object);
+
+        var toBeDiscarded = uut.DealCard();
+        uut.TryDiscard(toBeDiscarded);
+
+        Assert.Equal(uut.DiscardedCards[0], toBeDiscarded);
+        AssertCardCounts(uut, 51, 0, 1);
     }
 
     // There is always a debate about if it is okay to test more than one use-case per test.
@@ -41,30 +81,66 @@ public class DealerTest
 
         Assert.Null(actualDealtCard);
         Assert.Null(actualCheatCard);
-        AssertCardCounts(uut, 0, 52, 0);
+        AssertCardCounts(uut, 0, ExpectedTotalCardCount, 0);
     }
 
     [Fact]
-    public void DealCard_ThenDiscardCard()
+    public void Shuffle_CompareToDefaultOrder()
     {
-        var uut = new Dealer(mockLogger.Object);
+        var noShuffleDealer = new Dealer(mockLogger.Object);
+        var shuffleDealer = new Dealer(mockLogger.Object);
+        shuffleDealer.Shuffle();
 
-        var toBeDiscarded = uut.DealCard();
-        uut.TryDiscard(toBeDiscarded);
+        // If at least 10 cards are in a different placment after a shuffle, we can safely say a shuffle happened.
+        const int differenceThreshold = 10;
+        var differenceCount = 0;
+        for (var i = 0; i < ExpectedTotalCardCount; i++)
+        {
+            if (noShuffleDealer.CardsInDeck[i].DisplayName != shuffleDealer.CardsInDeck[i].DisplayName)
+            {
+                differenceCount++;
+            }
+        }
 
-        Assert.Equal(uut.DiscardedCards[0], toBeDiscarded);
-        AssertCardCounts(uut, 51, 0, 1);
+        Assert.True(differenceCount > differenceThreshold);
+        AssertCardCounts(shuffleDealer, ExpectedTotalCardCount, 0, 0);
     }
 
     [Fact]
-    public void Cheat_NotShuffled()
+    public void TryCut_SecondCardFromTop()
     {
         var uut = new Dealer(mockLogger.Object);
-        var expectedCard = uut.CardsInDeck[0];
+
+        uut.TryCut(1);
+        var actualTopCard = uut.Cheat();
+
+        Assert.Equal(Suit.Spades, actualTopCard.Suit);
+        Assert.Equal(Rank.Four, actualTopCard.Rank);
+        AssertCardCounts(uut, ExpectedTotalCardCount, 0, 0);
+    }
+
+    [Fact]
+    public void TryCut_SplitIndexTooHigh()
+    {
+        var uut = new Dealer(mockLogger.Object);
+
+        uut.TryCut(100);
+        var actualTopCard = uut.Cheat();
+
+        Assert.Equal(default, actualTopCard.Suit);
+        Assert.Equal(default, actualTopCard.Rank);
+        AssertCardCounts(uut, ExpectedTotalCardCount, 0, 0);
+    }
+
+    [Fact]
+    public void Cheat_DefaultSortOrder()
+    {
+        var uut = new Dealer(mockLogger.Object);
 
         var actualCard = uut.Cheat();
 
-        Assert.Equal(expectedCard, actualCard);
+        Assert.Equal(default, actualCard.Suit);
+        Assert.Equal(default, actualCard.Rank);
         AssertCardCounts(uut, ExpectedTotalCardCount, 0, 0);
     }
 

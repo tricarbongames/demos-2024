@@ -93,8 +93,8 @@ public class Dealer : IDealer
 
         lock (CardsInDeck)
         {
-            var topStack = CardsInDeck[..splitIndex];
-            var bottomStack = CardsInDeck.Slice(splitIndex + 1, CardsInDeck.Count - 1);
+            var topStack = CardsInDeck[..(splitIndex + 1)];
+            var bottomStack = CardsInDeck.Slice(splitIndex + 1, CardsInDeck.Count - splitIndex - 1);
             CardsInDeck = bottomStack;
             CardsInDeck.AddRange(topStack);
         }
