@@ -1,5 +1,3 @@
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 namespace DeckManager.Domain;
 
 public interface IDealer
