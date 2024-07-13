@@ -144,6 +144,18 @@ public class DealerTest
         AssertCardCounts(uut, ExpectedTotalCardCount, 0, 0);
     }
 
+    [Fact]
+    public void Cheat_ThenDeal()
+    {
+        var uut = new Dealer(mockLogger.Object);
+
+        var actualCheatCard = uut.Cheat();
+        var actualDealtCard = uut.DealCard();
+
+        Assert.Equal(actualCheatCard, actualDealtCard);
+        AssertCardCounts(uut, 51, 1, 0);
+    }
+
 
     private static void AssertCardCounts(Dealer dealer, int inDeck, int dealt, int discarded)
     {
