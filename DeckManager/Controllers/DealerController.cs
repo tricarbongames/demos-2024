@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using DeckManager.Domain;
+using System.ComponentModel.DataAnnotations;
 
 namespace DeckManager.Controllers;
 
@@ -39,7 +40,7 @@ public class DealerController : ControllerBase
     }
 
     [HttpGet("Cut")]
-    public void TryCut([FromQuery] int splitIndex)
+    public void TryCut([FromQuery, Required, Range(0, 51)] int splitIndex)
     {
         _dealer.TryCut(splitIndex);
     }
