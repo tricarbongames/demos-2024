@@ -56,7 +56,7 @@ public class Dealer : IDealer
         {
             foreach (var card in CardsInDeck)
             {
-                card.ShuffleOrder = Guid.NewGuid();
+                card.SetShuffleOrder(Guid.NewGuid());
             }
 
             CardsInDeck = [.. CardsInDeck.OrderBy(c => c.ShuffleOrder)];

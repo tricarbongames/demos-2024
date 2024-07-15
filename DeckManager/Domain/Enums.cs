@@ -1,5 +1,7 @@
 namespace DeckManager.Domain;
+using System.Text.Json.Serialization;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Suit
 {
     Spades,
@@ -8,6 +10,7 @@ public enum Suit
     Diamonds
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum Rank
 {
     Two,

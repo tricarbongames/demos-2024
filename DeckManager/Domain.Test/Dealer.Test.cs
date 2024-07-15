@@ -15,8 +15,8 @@ public class DealerTest
 
         var actualCard = uut.DealCard();
 
-        Assert.Equal(default, actualCard.Suit);
-        Assert.Equal(default, actualCard.Rank);
+        Assert.Equal(Suit.Spades, actualCard.Suit);
+        Assert.Equal(Rank.Two, actualCard.Rank);
         AssertCardCounts(uut, 51, 1, 0);
     }
 
@@ -29,8 +29,8 @@ public class DealerTest
         uut.RebuildDeck();
         var actualTopCard = uut.Cheat();
 
-        Assert.Equal(default, actualTopCard.Suit);
-        Assert.Equal(default, actualTopCard.Rank);
+        Assert.Equal(Suit.Spades, actualTopCard.Suit);
+        Assert.Equal(Rank.Two, actualTopCard.Rank);
         AssertCardCounts(uut, ExpectedTotalCardCount, 0, 0);
     }
 
@@ -127,8 +127,8 @@ public class DealerTest
         uut.TryCut(100);
         var actualTopCard = uut.Cheat();
 
-        Assert.Equal(default, actualTopCard.Suit);
-        Assert.Equal(default, actualTopCard.Rank);
+        Assert.Equal(Suit.Spades, actualTopCard.Suit);
+        Assert.Equal(Rank.Two, actualTopCard.Rank);
         AssertCardCounts(uut, ExpectedTotalCardCount, 0, 0);
     }
 
@@ -139,8 +139,8 @@ public class DealerTest
 
         var actualCard = uut.Cheat();
 
-        Assert.Equal(default, actualCard.Suit);
-        Assert.Equal(default, actualCard.Rank);
+        Assert.Equal(Suit.Spades, actualCard.Suit);
+        Assert.Equal(Rank.Two, actualCard.Rank);
         AssertCardCounts(uut, ExpectedTotalCardCount, 0, 0);
     }
 

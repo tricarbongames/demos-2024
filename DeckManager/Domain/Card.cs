@@ -1,12 +1,23 @@
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+
 namespace DeckManager.Domain;
 
 public class Card
 {
-    public Suit Suit { get; }
-    public Rank Rank { get; }
-    public string DisplayName { get; }
-    public int SortOrderAfterRebuild { get; }
-    public Guid ShuffleOrder { get; set; }
+    [Required]
+    public Suit? Suit { get; set; }
+    [Required]
+    public Rank? Rank { get; set; }
+    public string? DisplayName { get; }
+    public int? SortOrderAfterRebuild { get; }
+    public Guid? ShuffleOrder { get; private set; }
+
+    public Card()
+    {
+
+    }
 
     public Card(Suit suit, Rank rank, int sortOrderAfterRebuild)
     {
@@ -14,5 +25,10 @@ public class Card
         Rank = rank;
         SortOrderAfterRebuild = sortOrderAfterRebuild;
         DisplayName = DisplayNameHelper.GetDisplayName(suit, rank);
+    }
+
+    public void SetShuffleOrder(Guid shuffleOrder)
+    {
+        ShuffleOrder = shuffleOrder;
     }
 }
